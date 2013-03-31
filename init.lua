@@ -1,20 +1,29 @@
-local Bintree = require("lib/bintree")
-local math = math
+-- Treesome: Tree-based tiling layour for Awesome 3
+-- Licenced under the GNU General Public License v2
+--  * (c) 2013, RobSis@github.com
+---------------------------------------------------
+
 local ipairs = ipairs
-local api =
+local pairs = pairs
+local type = type
+local tostring = tostring
+local table = table
+local math = math
+local awful = require("awful")
+local capi =
 {
-    tag = awful.tag,
     client = client
 }
 
-local treesome = {}
-treesome.name = "treesome"
-treesome.trees = {}
+local Bintree = require("treesome/bintree")
+module("treesome")
 
-treesome.config = {
+-- Globals
+local config = {
     focusFirst = true
 }
-
+trees = {}
+name = "treesome"
 
 function table.find(tbl, item)
     for key, value in pairs(tbl) do
@@ -70,28 +79,28 @@ function Bintree:filterClients(node, clients)
 end
 
 
-function treesome.arrange(p)
+function arrange(p)
     local area = p.workarea
     local n = #p.clients
 
-    local tag = tostring(api.tag.selected(1))
-    if not treesome.trees[tag] then
-        treesome.trees[tag] = { t = nil, n = 0 }
+    local tag = tostring(awful.tag.selected(1))
+    if not trees[tag] then
+        trees[tag] = { t = nil, n = 0 }
     end
 
     -- rearange only on change
     local changed = 0
     local layoutSwitch = false
-    if treesome.trees[tag].n ~= n then
-        if math.abs(n - treesome.trees[tag].n) > 1 then
+    if trees[tag].n ~= n then
+        if math.abs(n - trees[tag].n) > 1 then
             layoutSwitch = true
         end
-        if not treesome.trees[tag].n or n > treesome.trees[tag].n then
+        if not trees[tag].n or n > trees[tag].n then
             changed = 1
         else
             changed = -1
         end
-        treesome.trees[tag].n = n
+        trees[tag].n = n
     end
 
     -- some client removed. remove (from) tree
@@ -102,9 +111,9 @@ function treesome.arrange(p)
                 tokens[i] = c.pid
             end
 
-            treesome.trees[tag].t:filterClients(treesome.trees[tag].t, tokens)
+            trees[tag].t:filterClients(trees[tag].t, tokens)
         else
-            treesome.trees[tag] = nil
+            trees[tag] = nil
         end
     end
 
@@ -112,35 +121,35 @@ function treesome.arrange(p)
     local prevClient = nil
     if changed > 0 then
         for i, c in ipairs(p.clients) do
-            if not treesome.trees[tag].t or not treesome.trees[tag].t:find(c.pid) then
-                focus = api.client.focus
+            if not trees[tag].t or not trees[tag].t:find(c.pid) then
+                focus = capi.client.focus
 
                 local focusNode = nil
                 local focusGeometry = nil
                 local focusId = nil
-                if treesome.trees[tag].t and focus and c.pid ~= focus.pid and not layoutSwitch then
+                if trees[tag].t and focus and c.pid ~= focus.pid and not layoutSwitch then
                     -- split focused window
-                    focusNode = treesome.trees[tag].t:find(focus.pid)
+                    focusNode = trees[tag].t:find(focus.pid)
                     focusGeometry = focus:geometry()
                     focusId = focus.pid
                 else
                     -- client moved to this tag
                     -- or the layout was switched
                     if prevClient then
-                        focusNode = treesome.trees[tag].t:find(prevClient.pid)
+                        focusNode = trees[tag].t:find(prevClient.pid)
                         focusGeometry = prevClient:geometry()
                         focusId = prevClient.pid
                     else
-                        if not treesome.trees[tag].t or
-                                not treesome.trees[tag].t:firstLeaf() then
-                            treesome.trees[tag].t = Bintree.new(c.pid)
+                        if not trees[tag].t or
+                                not trees[tag].t:firstLeaf() then
+                            trees[tag].t = Bintree.new(c.pid)
                             focusId = c.pid
                             focusGeometry = {
                                 width = 0,
                                 height = 0
                             }
                         else
-                            focusNode = treesome.trees[tag].t:firstLeaf()
+                            focusNode = trees[tag].t:firstLeaf()
                             focusId = focusNode.data
                             focusGeometry = {
                                 width = 0,
@@ -152,14 +161,14 @@ function treesome.arrange(p)
                 end
 
                 if focusNode then
-                    -- TODO make user able to select
+                    -- TODO user-selectable
                     if (focusGeometry.width <= focusGeometry.height) then
                         focusNode.data = "horizontal"
                     else
                         focusNode.data = "vertical"
                     end
 
-                    if treesome.config.focusFirst then
+                    if config.focusFirst then
                         focusNode:addLeft(Bintree.new(focusId))
                         focusNode:addRight(Bintree.new(c.pid))
                     else
@@ -180,10 +189,10 @@ function treesome.arrange(p)
             local newX = area.x
             local newY = area.y
 
-            local clientNode = treesome.trees[tag].t:find(c.pid)
+            local clientNode = trees[tag].t:find(c.pid)
             local path = {}
 
-            treesome.trees[tag].t:trace(c.pid, path)
+            trees[tag].t:trace(c.pid, path)
             for i, v in ipairs(path) do
                 if i < #path then
                     split = v.split
@@ -206,7 +215,7 @@ function treesome.arrange(p)
                 end
             end
 
-            local sibling = treesome.trees[tag].t:getSibling(c.pid)
+            local sibling = trees[tag].t:getSibling(c.pid)
 
             local geometry = {
                 width = newWidth,
@@ -220,5 +229,3 @@ function treesome.arrange(p)
         end
     end
 end
-
-return treesome

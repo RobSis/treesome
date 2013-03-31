@@ -6,9 +6,9 @@ Bintree.__index = Bintree
 
 function Bintree.new(data, left, right)
    local node = {
-       ["data"] = data,
-       ["left"] = left,
-       ["right"] = right,
+       data = data,
+       left = left,
+       right = right,
    }
    return setmetatable(node,Bintree)
 end

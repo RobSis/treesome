@@ -1,24 +1,28 @@
-# treesome
+treesome
+========
 
-Tree-based tiling layout for Awesome 3.
+Treesome is binary tree-based tiling layout for Awesome 3.
 
-Similarily to tmux, it can split the focused window vertically or horizontally.
-
-
-# Wishlist
-
-Since the project is far from finished, here's a little roadmap:
-
-* Support Resizing
-
-* Swapping clients' positions
-
-* Keyboard movement keys that make sense
-
-* Fix the damn bugs
+Similarily to tmux, it can split focused window vertically or horizontally.
 
 
-## Use
+Wishlist
+--------
+
+Since the project is far from finished, here's a little
+roadmap of planned features:
+
+  * Support Resizing
+
+  * Swapping clients' positions
+
+  * Keyboard movement keys that make sense
+
+  * Fix the damn bugs
+
+
+Use
+---
 
 1. Clone repository to your awesome directory
 
