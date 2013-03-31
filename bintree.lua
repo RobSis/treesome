@@ -103,23 +103,6 @@ function Bintree:getSibling(data)
     return output or nil
 end
 
--- df search for first leaf
-function Bintree:firstLeaf()
-    if self ~= nil then
-        if self.left == nil and self.right == nil then
-            return self
-        else
-            local output = nil
-            if self.left ~= nil then
-                output = self.left:firstLeaf()
-            end
-            if self.right ~= nil then
-                return output or self.right:rightLeaf() or nil
-            end
-        end
-    end
-end
-
 function Bintree.show(node, level)
     if level == nil then
         level = 0

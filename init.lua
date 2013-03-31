@@ -24,6 +24,8 @@ local config = {
 }
 trees = {}
 name = "treesome"
+forceSplit = nil
+
 
 function table.find(tbl, item)
     for key, value in pairs(tbl) do
@@ -78,6 +80,13 @@ function Bintree:filterClients(node, clients)
     end
 end
 
+function horizontal()
+    forceSplit = "horizontal"
+end
+
+function vertical()
+    forceSplit = "vertical"
+end
 
 function arrange(p)
     local area = p.workarea
@@ -85,7 +94,18 @@ function arrange(p)
 
     local tag = tostring(awful.tag.selected(1))
     if not trees[tag] then
-        trees[tag] = { t = nil, n = 0 }
+        trees[tag] = {
+            t = nil,
+            lastFocus = nil,
+            n = 0
+        }
+    end
+
+    if trees[tag] ~= nil then
+        focus = capi.client.focus
+        if focus ~= nil then
+            trees[tag].lastFocus = focus
+        end
     end
 
     -- rearange only on change
@@ -119,10 +139,13 @@ function arrange(p)
 
     -- some client added. put it in the tree as a sibling of focus
     local prevClient = nil
+    local nextSplit = 0
     if changed > 0 then
         for i, c in ipairs(p.clients) do
             if not trees[tag].t or not trees[tag].t:find(c.pid) then
-                focus = capi.client.focus
+                if focus == nil then
+                    focus = trees[tag].lastFocus
+                end
 
                 local focusNode = nil
                 local focusGeometry = nil
@@ -137,35 +160,35 @@ function arrange(p)
                     -- or the layout was switched
                     if prevClient then
                         focusNode = trees[tag].t:find(prevClient.pid)
-                        focusGeometry = prevClient:geometry()
+                        nextSplit = (nextSplit + 1) % 2
                         focusId = prevClient.pid
                     else
-                        if not trees[tag].t or
-                                not trees[tag].t:firstLeaf() then
+                        if not trees[tag].t then
+                            -- create as root
                             trees[tag].t = Bintree.new(c.pid)
                             focusId = c.pid
                             focusGeometry = {
                                 width = 0,
                                 height = 0
                             }
-                        else
-                            focusNode = trees[tag].t:firstLeaf()
-                            focusId = focusNode.data
-                            focusGeometry = {
-                                width = 0,
-                                height = 0
-                            }
                         end
-
                     end
                 end
 
                 if focusNode then
-                    -- TODO user-selectable
-                    if (focusGeometry.width <= focusGeometry.height) then
-                        focusNode.data = "horizontal"
+                    if focusGeometry == nil then
+                        local splits = {"horizontal", "vertical"}
+                        focusNode.data = splits[nextSplit + 1]
                     else
-                        focusNode.data = "vertical"
+                        if (forceSplit ~= nil) then
+                            focusNode.data = forceSplit
+                        else
+                            if (focusGeometry.width <= focusGeometry.height) then
+                                focusNode.data = "vertical"
+                            else
+                                focusNode.data = "horizontal"
+                            end
+                        end
                     end
 
                     if config.focusFirst then
@@ -179,15 +202,18 @@ function arrange(p)
             end
             prevClient = c
         end
+        forceSplit = nil
     end
 
     -- draw it
     if n >= 1 and changed ~= 0 then
         for i, c in ipairs(p.clients) do
-            local newWidth = area.width
-            local newHeight = area.height
-            local newX = area.x
-            local newY = area.y
+            local geometry = {
+                width = area.width,
+                height = area.height,
+                x = area.x,
+                y = area.y
+            }
 
             local clientNode = trees[tag].t:find(c.pid)
             local path = {}
@@ -199,17 +225,17 @@ function arrange(p)
                     -- is the client left of right from this node
                     direction = path[i + 1].direction
 
-                    if split == "vertical" then
-                        newWidth = newWidth / 2.0
+                    if split == "horizontal" then
+                        geometry.width = geometry.width / 2.0
 
                         if direction == "right" then
-                            newX = newX + newWidth
+                            geometry.x = geometry.x + geometry.width
                         end
-                    elseif split == "horizontal" then
-                        newHeight = newHeight / 2.0
+                    elseif split == "vertical" then
+                        geometry.height = geometry.height / 2.0
 
                         if direction == "right" then
-                            newY = newY + newHeight
+                            geometry.y = geometry.y + geometry.height
                         end
                     end
                 end
@@ -217,12 +243,6 @@ function arrange(p)
 
             local sibling = trees[tag].t:getSibling(c.pid)
 
-            local geometry = {
-                width = newWidth,
-                height = newHeight,
-                x = newX,
-                y = newY,
-            }
             c:geometry(geometry)
             -- lower for maximized windows
             c:lower()
