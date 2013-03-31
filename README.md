@@ -4,20 +4,8 @@ Treesome
 Treesome is binary tree-based tiling layout for Awesome 3.
 Similarily to tmux, it can split focused window vertically or horizontally.
 
-
-Wishlist
---------
-
-Since the project is far from finished, here's a little
-roadmap of planned features:
-
-  * Support Resizing (by mouse)
-
-  * Swapping clients' positions (by mouse drag)
-
-  * Keyboard movement keys that make sense
-
-  * Fix the damn bugs
+The project is still in development with most of the
+problems recorded in github issue tracker.
 
 
 Use
@@ -35,8 +23,8 @@ Use
 
 3. Restart and you're done.
 
-By default, direction of split is decided based on the dimensions.
-If you want to choose, you can map keys to force the direction.
+By default, direction of split is decided based on the dimensions of focused client.
+If you want you to force the direction of the split, map some keys like this:
 
 ```
     awful.key({ modkey }, "v", treesome.vertical),
