@@ -1,7 +1,7 @@
 Treesome
 ========
 
-Treesome is binary tree-based tiling layout for Awesome 3.
+Treesome is binary tree-based tiling layout for Awesome 3.4.
 Similarily to tmux, it can split focused window vertically or horizontally.
 
 The project is still in development with most of the
@@ -31,6 +31,10 @@ If you want you to force the direction of the split, map some keys like this:
     awful.key({ modkey }, "h", treesome.horizontal)
 ```
 
+Screenshot
+----------
+
+![treesome in action](http://i.imgur.com/W6B7XnD.png)
 
 Licence
 -------
