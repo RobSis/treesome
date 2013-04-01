@@ -26,7 +26,6 @@ trees = {}
 name = "treesome"
 forceSplit = nil
 
-
 function table.find(tbl, item)
     for key, value in pairs(tbl) do
         if value == item then return key end
@@ -80,6 +79,7 @@ function Bintree:filterClients(node, clients)
     end
 end
 
+
 function horizontal()
     forceSplit = "horizontal"
 end
@@ -104,7 +104,11 @@ function arrange(p)
     if trees[tag] ~= nil then
         focus = capi.client.focus
         if focus ~= nil then
-            trees[tag].lastFocus = focus
+            if awful.client.floating.get(focus) then
+                focus = nil
+            else
+                trees[tag].lastFocus = focus
+            end
         end
     end
 
@@ -156,8 +160,7 @@ function arrange(p)
                     focusGeometry = focus:geometry()
                     focusId = focus.pid
                 else
-                    -- client moved to this tag
-                    -- or the layout was switched
+                    -- the layout was switched with more clients to order at once
                     if prevClient then
                         focusNode = trees[tag].t:find(prevClient.pid)
                         nextSplit = (nextSplit + 1) % 2
@@ -206,7 +209,7 @@ function arrange(p)
     end
 
     -- draw it
-    if n >= 1 and changed ~= 0 then
+    if n >= 1 then
         for i, c in ipairs(p.clients) do
             local geometry = {
                 width = area.width,
@@ -244,8 +247,6 @@ function arrange(p)
             local sibling = trees[tag].t:getSibling(c.pid)
 
             c:geometry(geometry)
-            -- lower for maximized windows
-            c:lower()
         end
     end
 end
