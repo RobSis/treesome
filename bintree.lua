@@ -103,6 +103,23 @@ function Bintree:getSibling(data)
     return output or nil
 end
 
+function Bintree:getParent(data)
+    local output = nil
+    if type(self.left) == "table" then
+        if self.left.data == data then
+            return self
+        end
+        output = self.left:getParent(data) or nil
+    end
+
+    if type(self.right) == "table" then
+        if self.right.data == data then
+            return self
+        end
+        return output or self.right:getParent(data) or self
+    end
+end
+
 function Bintree.show(node, level)
     if level == nil then
         level = 0
