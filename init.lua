@@ -99,21 +99,6 @@ function vertical()
     forceSplit = "vertical"
 end
 
-function flip()
-    local tag = tostring(awful.tag.selected(1))
-    if trees[tag] and trees[tag].t then
-        local parent = trees[tag].t:getParent(capi.client.focus.pid)
-        if parent then
-            if parent.data == "vertical" then
-                  parent.data = "horizontal"
-            else
-                parent.data = "vertical"
-            end
-            awful.layout.arrange(1)
-        end
-    end
-end
-
 function table.diff(table1, table2)
     local diffList = {}
     for i,v in ipairs(table1) do
