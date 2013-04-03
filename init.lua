@@ -26,7 +26,7 @@ trees = {}
 name = "treesome"
 forceSplit = nil
 
-function table.find(tbl, item)
+function table_find(tbl, item)
     for key, value in pairs(tbl) do
         if value == item then return key end
     end
@@ -63,7 +63,7 @@ end
 -- remove all leaves with data that don't appear in given table
 function Bintree:filterClients(node, clients)
     if node then
-        if node.data and not table.find(clients, node.data) and
+        if node.data and not table_find(clients, node.data) and
             node.data ~= "horizontal" and node.data ~= "vertical" then
             self:removeLeaf(node.data)
         end
