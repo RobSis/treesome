@@ -21,7 +21,12 @@ Use
 
    and add the layout 'treesome' (without apostrophes) to your layout table.
 
-3. Restart and you're done.
+3. Replace all awful.client.setslave by treesome.setslave
+   and awful.client.setmaster by treesome.setmaster.
+
+   Treesome doesn't use master/slave philosophy, so we need to override it.
+
+4. Restart and you're done.
 
 By default, direction of split is decided based on the dimensions of focused client.
 If you want you to force the direction of the split, map some keys like this:

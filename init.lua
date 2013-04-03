@@ -91,6 +91,18 @@ function Bintree:swapLeaves(data1, data2)
     end
 end
 
+function setslave(client)
+    if not trees[tostring(awful.tag.selected(1))] then
+        awful.client.setslave(client)
+    end
+end
+
+function setmaster(client)
+    if not trees[tostring(awful.tag.selected(1))] then
+        awful.client.setmaster(client)
+    end
+end
+
 function horizontal()
     forceSplit = "horizontal"
 end
@@ -140,6 +152,7 @@ function arrange(p)
     -- rearange only on change
     local changed = 0
     local layoutSwitch = false
+
 
     if trees[tag].n ~= n then
         if math.abs(n - trees[tag].n) > 1 then
