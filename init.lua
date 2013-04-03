@@ -79,6 +79,17 @@ function Bintree:filterClients(node, clients)
     end
 end
 
+function Bintree:swapLeaves(data1, data2)
+    local leaf1 = self:find(data1)
+    local leaf2 = self:find(data2)
+
+    local temp = nil
+    if leaf1 and leaf2 then
+       temp = leaf1.data
+       leaf1.data = leaf2.data
+       leaf2.data = temp
+    end
+end
 
 function horizontal()
     forceSplit = "horizontal"
@@ -94,13 +105,26 @@ function flip()
         local parent = trees[tag].t:getParent(capi.client.focus.pid)
         if parent then
             if parent.data == "vertical" then
-                trees[tag].t:getParent(capi.client.focus.pid).data = "horizontal"
+                  parent.data = "horizontal"
             else
-                trees[tag].t:getParent(capi.client.focus.pid).data = "vertical"
+                parent.data = "vertical"
             end
             awful.layout.arrange(1)
         end
     end
+end
+
+function table.diff(table1, table2)
+    local diffList = {}
+    for i,v in ipairs(table1) do
+        if table2[i] ~= v then
+            table.insert(diffList, v)
+        end
+    end
+    if #diffList == 0 then
+        diffList = nil
+    end
+    return diffList
 end
 
 function arrange(p)
@@ -112,6 +136,7 @@ function arrange(p)
         trees[tag] = {
             t = nil,
             lastFocus = nil,
+            clients = nil,
             n = 0
         }
     end
@@ -130,6 +155,7 @@ function arrange(p)
     -- rearange only on change
     local changed = 0
     local layoutSwitch = false
+
     if trees[tag].n ~= n then
         if math.abs(n - trees[tag].n) > 1 then
             layoutSwitch = true
@@ -140,6 +166,15 @@ function arrange(p)
             changed = -1
         end
         trees[tag].n = n
+        trees[tag].clients = p.clients
+    else
+        if trees[tag].clients then
+            local diff = table.diff(p.clients, trees[tag].clients)
+            if diff and #diff == 2 then
+                trees[tag].t:swapLeaves(diff[1].pid, diff[2].pid)
+            end
+        end
+        trees[tag].clients = p.clients
     end
 
     -- some client removed. remove (from) tree

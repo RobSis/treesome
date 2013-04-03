@@ -31,10 +31,13 @@ If you want you to force the direction of the split, map some keys like this:
     awful.key({ modkey }, "h", treesome.horizontal)
 ```
 
-Screenshot
-----------
+Screenshots
+-----------
 
 ![treesome in action](http://i.imgur.com/W6B7XnD.png)
+
+
+
 
 Licence
 -------
