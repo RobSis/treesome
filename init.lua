@@ -12,7 +12,8 @@ local math = math
 local awful = require("awful")
 local capi =
 {
-    client = client
+    client = client,
+    mouse = mouse
 }
 
 local Bintree = require("treesome/bintree")
@@ -93,13 +94,13 @@ function Bintree:filterClients(node, clients)
 end
 
 function setslave(client)
-    if not trees[tostring(awful.tag.selected(1))] then
+    if not trees[tostring(awful.tag.selected(capi.mouse.screen))] then
         awful.client.setslave(client)
     end
 end
 
 function setmaster(client)
-    if not trees[tostring(awful.tag.selected(1))] then
+    if not trees[tostring(awful.tag.selected(capi.mouse.screen))] then
         awful.client.setmaster(client)
     end
 end
@@ -116,7 +117,7 @@ function arrange(p)
     local area = p.workarea
     local n = #p.clients
 
-    local tag = tostring(awful.tag.selected(1))
+    local tag = tostring(awful.tag.selected(capi.mouse.screen))
     if not trees[tag] then
         trees[tag] = {
             t = nil,
@@ -141,7 +142,6 @@ function arrange(p)
     local changed = 0
     local layoutSwitch = false
 
-
     if trees[tag].n ~= n then
         if math.abs(n - trees[tag].n) > 1 then
             layoutSwitch = true
@@ -152,7 +152,6 @@ function arrange(p)
             changed = -1
         end
         trees[tag].n = n
-        trees[tag].clients = p.clients
     else
         if trees[tag].clients then
             local diff = table_diff(p.clients, trees[tag].clients)
@@ -160,8 +159,8 @@ function arrange(p)
                 trees[tag].t:swapLeaves(diff[1].pid, diff[2].pid)
             end
         end
-        trees[tag].clients = p.clients
     end
+    trees[tag].clients = p.clients
 
     -- some client removed. remove (from) tree
     if changed < 0 then
