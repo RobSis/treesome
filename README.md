@@ -1,7 +1,7 @@
 Treesome
 ========
 
-Treesome is binary tree-based tiling layout for Awesome 3.4.
+Treesome is binary tree-based tiling layout for Awesome 3.4 and latter.
 Similarily to tmux, it can split focused window vertically or horizontally.
 
 The project is still in development with most of the
@@ -17,31 +17,35 @@ Use
 
 2. Add this line to rc.lua after other require functions.
 
-    `require("treesome")`
+    `local treesome = require("treesome")`
 
    and add the layout 'treesome' (without apostrophes) to your layout table.
 
-3. Replace all awful.client.setslave by treesome.setslave
-   and awful.client.setmaster by treesome.setmaster.
-
-   Treesome doesn't use master/slave philosophy, so we need to override it.
-
 4. Restart and you're done.
 
-By default, direction of split is decided based on the dimensions of focused client.
-If you want you to force the direction of the split, map some keys like this:
+### Optional steps
+
+1. If you use awful.client.setslave or awful.client.setmaster in your rc.lua,
+   replace them with treesome.setslave and treesome.setmaster.
+
+   Treesome doesn't use master/slave philosophy, so we need to override it,
+   but keep it working for other layouts.
+
+
+2. By default, direction of split is decided based on the dimensions of focused
+   client. If you want you to force the direction of the split, map some keys
+   like this:
 
 ```
     awful.key({ modkey }, "v", treesome.vertical),
     awful.key({ modkey }, "h", treesome.horizontal)
 ```
 
+
 Screenshots
 -----------
 
 ![treesome in action](http://i.imgur.com/W6B7XnD.png)
-
-
 
 
 Licence
