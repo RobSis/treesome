@@ -120,6 +120,18 @@ function Bintree:getParent(data)
     end
 end
 
+function Bintree:swapLeaves(data1, data2)
+    local leaf1 = self:find(data1)
+    local leaf2 = self:find(data2)
+
+    local temp = nil
+    if leaf1 and leaf2 then
+       temp = leaf1.data
+       leaf1.data = leaf2.data
+       leaf2.data = temp
+    end
+end
+
 function Bintree.show(node, level)
     if level == nil then
         level = 0
