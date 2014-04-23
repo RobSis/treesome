@@ -25,14 +25,7 @@ Use
 
 ### Optional steps
 
-1. If you use awful.client.setslave or awful.client.setmaster in your rc.lua,
-   replace them with treesome.setslave and treesome.setmaster.
-
-   Treesome doesn't use master/slave philosophy, so we need to override it,
-   but keep it working for other layouts.
-
-
-2. By default, direction of split is decided based on the dimensions of focused
+1. By default, direction of split is decided based on the dimensions of focused
    client. If you want you to force the direction of the split, map some keys
    like this:
 
