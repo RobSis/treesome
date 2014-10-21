@@ -6,6 +6,7 @@
 --]]
 
 local awful     = require("awful")
+local beautiful = require("beautiful")
 local Bintree   = require("treesome/bintree")
 local os        = os
 local math      = math
@@ -22,6 +23,9 @@ local capi =
 
 module("treesome")
 name = "treesome"
+
+-- Layout icon
+beautiful.layout_treesome = os.getenv("HOME") .. "/.config/awesome/treesome/layout_icon.png"
 
 -- Configuration
 local configuration = {
