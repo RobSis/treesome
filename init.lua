@@ -1,33 +1,39 @@
--- Treesome: Tree-based tiling layour for Awesome 3
--- Licenced under the GNU General Public License v2
---  * (c) 2013, RobSis@github.com
----------------------------------------------------
+--[[
+    Treesome: Binary Tree-based tiling layout for Awesome 3
 
-local ipairs = ipairs
-local pairs = pairs
-local type = type
-local tostring = tostring
-local table = table
-local math = math
-local awful = require("awful")
+    Github: https://github.com/RobSis/treesome
+    License: GNU General Public License v2.0
+--]]
+
+local awful     = require("awful")
+local Bintree   = require("treesome/bintree")
+local os        = os
+local math      = math
+local ipairs    = ipairs
+local pairs     = pairs
+local table     = table
+local tostring  = tostring
+local type      = type
 local capi =
 {
     client = client,
     mouse = mouse
 }
 
-local Bintree = require("treesome/bintree")
 module("treesome")
+name = "treesome"
 
--- Globals
-local config = {
+-- Configuration
+local configuration = {
     focusFirst = true
 }
-trees = {}
-name = "treesome"
-forceSplit = nil
 
--- unique identifier of a window
+-- Globals
+local trees = {}
+local forceSplit = nil
+
+
+-- get an unique identifier of a window
 function hash(client)
     return client.window
 end
@@ -234,7 +240,7 @@ function arrange(p)
                         end
                     end
 
-                    if config.focusFirst then
+                    if configuration.focusFirst then
                         focusNode:addLeft(Bintree.new(focusId))
                         focusNode:addRight(Bintree.new(hash(c)))
                     else
