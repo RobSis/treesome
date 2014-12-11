@@ -13,6 +13,7 @@ local math      = math
 local ipairs    = ipairs
 local pairs     = pairs
 local table     = table
+local tonumber  = tonumber
 local tostring  = tostring
 local type      = type
 local capi =
@@ -258,14 +259,20 @@ function arrange(p)
         forceSplit = nil
     end
 
+    -- Useless gap.
+    local useless_gap = tonumber(beautiful.useless_gap_width)
+    if useless_gap == nil then
+        useless_gap = 0
+    end
+
     -- draw it
     if n >= 1 then
         for i, c in ipairs(p.clients) do
             local geometry = {
-                width = area.width,
-                height = area.height,
-                x = area.x,
-                y = area.y
+                width = area.width - ( useless_gap * 2.0 ),
+                height = area.height - ( useless_gap * 2.0 ),
+                x = area.x + useless_gap,
+                y = area.y + useless_gap
             }
 
             local clientNode = trees[tag].t:find(hash(c))
@@ -279,16 +286,16 @@ function arrange(p)
                     direction = path[i + 1].direction
 
                     if split == "horizontal" then
-                        geometry.width = geometry.width / 2.0
+                        geometry.width = ( geometry.width - useless_gap ) / 2.0
 
                         if direction == "right" then
-                            geometry.x = geometry.x + geometry.width
+                            geometry.x = geometry.x + geometry.width + useless_gap
                         end
                     elseif split == "vertical" then
-                        geometry.height = geometry.height / 2.0
+                        geometry.height = ( geometry.height - useless_gap ) / 2.0
 
                         if direction == "right" then
-                            geometry.y = geometry.y + geometry.height
+                            geometry.y = geometry.y + geometry.height + useless_gap
                         end
                     end
                 end
